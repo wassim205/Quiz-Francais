@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF Quiz</title>
+    <script src="tailwind.js" defer></script>
+</head>
+
+<body>
+    <header class="w-screen h-80 flex flex-col justify-center items-center mt-10">
+        <h1 class="text-9xl font-serif">FRENCH QUIZ</h1>
+        <h2 class="text-8xl mt-8 font-serif">TCF</h2>
+    </header>
+
+    <main class="w-screen h-52 flex justify-center items-center flex-col mt-16">
+        <p id="paragraphIntro" class="text-xl font-bold duration-500">Welcome to our TCF testing site! Test your French
+            level and instantly discover if you're A1, A2, or higher.</p>
+        <button id="startQuiz"
+            class="mt-10 relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+            <span
+                class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">PRESS
+                TO START</span>
+        </button>
+
+        <div id="questionContainer" class="font-serif font-bold text-xl"></div>
+        <div id="answerContainer" class="font-serif font-bold text-lg flex mt-20 space-x-32"></div>
+    </main>
+
+
+
+
+    <style>
+        .answers-button{
+            background-color: #909090;
+            color: black;
+            border-radius: 5px;
+            padding-top: 1em;
+            padding-bottom: 1em;
+            padding-right: 2em;
+            padding-left: 2em;
+        }
+
+        .answers-button:hover{
+            background-color: #000000;
+            color: #909090
+        }
+    </style>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>
