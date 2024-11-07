@@ -79,24 +79,29 @@ function showQuestion(index) {
   const questionContainer = document.getElementById("questionContainer");
   questionContainer.textContent = questions[index].question;
 
-  const Qanswers = document.getElementById("answerContainer");
-  Qanswers.innerHTML = "";
+  const answerContainer = document.getElementById("answerContainer");
+  answerContainer.innerHTML = "";
   const answerButtons = questions[index].answers.map((answer, answerIndex) => {
     const answerElement = document.createElement("button");
     answerElement.textContent = `${answerIndex + 1}. ${answer}`;
     answerElement.classList.add("answers-button");
+    answerElement.dataset.answerIndex = answerIndex;
     return answerElement;
   });
 
-  answerButtons.forEach((button, answerIndex) => {
-    button.addEventListener("click", () =>
-      checkAnswer(answerIndex, button, answerButtons)
-    );
-    Qanswers.appendChild(button);
+  answerButtons.forEach((button) => {
+    button.addEventListener("click", () => checkAnswer(button, answerButtons));
+    answerContainer.appendChild(button);
   });
+
+  const nextButton = document.getElementById("next-button");
+  if (nextButton) {
+    nextButton.style.display = "block";
+  }
 }
 
-function checkAnswer(answerIndex, buttonElement, buttons) {
+function checkAnswer(buttonElement, buttons) {
+  const answerIndex = parseInt(buttonElement.dataset.answerIndex);
   const correctAnswerIndex = questions[currentQuestionIndex].answers.indexOf(
     questions[currentQuestionIndex].correct
   );
@@ -108,11 +113,43 @@ function checkAnswer(answerIndex, buttonElement, buttons) {
     buttons[correctAnswerIndex].style.backgroundColor = "green";
   }
   disableButtons(buttons);
+  showNextButton();
 }
 
-// Function to disable all buttons
 function disableButtons(buttons) {
   buttons.forEach((button) => {
-    button.disabled = true; // Disable each button
+    button.disabled = true;
   });
+}
+function showNextButton() {
+  const answerContainer = document.getElementById("next-buttonContainer"); // Make sure this ID is correct
+
+  // Check if the button already exists
+  let nextButton = document.getElementById("next-button");
+  if (!nextButton) {
+    nextButton = document.createElement("button");
+    nextButton.id = "next-button"; // Assign an ID to the button
+    nextButton.textContent = "Next";
+    nextButton.classList.add("next-button");
+
+    nextButton.addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion(currentQuestionIndex);
+      } else {
+        alert("Quiz completed!");
+      }
+      // Hide the button after it is clicked
+      nextButton.style.display = "none";
+    });
+
+    answerContainer.appendChild(nextButton);
+  }
+
+  // Show the button if there are more questions
+  if (currentQuestionIndex < questions.length - 1) {
+    nextButton.style.display = "block";
+  } else {
+    alert("Quiz completed!");
+  }
 }
