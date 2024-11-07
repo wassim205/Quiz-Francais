@@ -73,7 +73,8 @@ function shuffleArray(array) {
 shuffleArray(questions);
 
 let currentQuestionIndex = 0;
-
+let score = 0; // Initialize score
+const totalQuestions = questions.length; // Total number of questions
 // show questions
 function showQuestion(index) {
   const questionContainer = document.getElementById("questionContainer");
@@ -98,6 +99,8 @@ function showQuestion(index) {
   if (nextButton) {
     nextButton.style.display = "block";
   }
+
+  updateStatus(); // Update status display when showing a question
 }
 
 function checkAnswer(buttonElement, buttons) {
@@ -108,12 +111,14 @@ function checkAnswer(buttonElement, buttons) {
 
   if (answerIndex === correctAnswerIndex) {
     buttonElement.style.backgroundColor = "green";
+    score++; // Increment score for correct answer
   } else {
     buttonElement.style.backgroundColor = "red";
     buttons[correctAnswerIndex].style.backgroundColor = "green";
   }
   disableButtons(buttons);
   showNextButton();
+  updateStatus(); // Update status display after answering
 }
 
 function disableButtons(buttons) {
@@ -121,14 +126,14 @@ function disableButtons(buttons) {
     button.disabled = true;
   });
 }
-function showNextButton() {
-  const answerContainer = document.getElementById("next-buttonContainer"); // Make sure this ID is correct
 
-  // Check if the button already exists
+function showNextButton() {
+  const answerContainer = document.getElementById("next-buttonContainer");
+
   let nextButton = document.getElementById("next-button");
   if (!nextButton) {
     nextButton = document.createElement("button");
-    nextButton.id = "next-button"; // Assign an ID to the button
+    nextButton.id = "next-button";
     nextButton.textContent = "Next";
     nextButton.classList.add("next-button");
 
@@ -137,19 +142,40 @@ function showNextButton() {
       if (currentQuestionIndex < questions.length) {
         showQuestion(currentQuestionIndex);
       } else {
-        alert("Quiz completed!");
+        const level = calculateLevel(score);
+        alert(
+          `Quiz completed! Your score: ${score}/${totalQuestions}. Estimated level: ${level}`
+        );
       }
-      // Hide the button after it is clicked
       nextButton.style.display = "none";
     });
 
     answerContainer.appendChild(nextButton);
   }
 
-  // Show the button if there are more questions
   if (currentQuestionIndex < questions.length - 1) {
     nextButton.style.display = "block";
   } else {
-    alert("Quiz completed!");
+    const level = calculateLevel(score);
+    alert(
+      `Quiz completed! Your score: ${score}/${totalQuestions}. Estimated level: ${level}`
+    );
   }
+}
+
+function calculateLevel(score) {
+  if (score <= 2) return "Niveau A1";
+  if (score <= 5) return "Niveau A2";
+  if (score <= 7) return "Niveau B1";
+  if (score === 8) return "Niveau B2";
+  if (score === 9) return "Niveau C1";
+  if (score === 10) return "Niveau C2";
+  return "Niveau inconnu";
+}
+
+function updateStatus() {
+  const statusContainer = document.getElementById("statusContainer");
+  statusContainer.textContent = `Question Number: ${
+    currentQuestionIndex + 1
+  } / ${totalQuestions}`;
 }
