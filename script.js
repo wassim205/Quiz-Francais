@@ -225,7 +225,9 @@ window.addEventListener("load", function () {
   if (storedScore) {
     const resultContainer = document.getElementById("resultContainer");
     const resultParagraph = document.getElementById("resultParagraph");
-    resultParagraph.textContent = `Your score: ${storedScore}/${totalQuestions}. And your level is : ${calculateLevel(score)}`;
+    resultParagraph.textContent = `Your score: ${storedScore}/${totalQuestions}. And your level is : ${calculateLevel(
+      score
+    )}`;
     resultContainer.style.display = "block";
     resultParagraph.classList.add("resultParagraph");
   }
