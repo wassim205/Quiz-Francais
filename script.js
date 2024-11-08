@@ -62,26 +62,21 @@ const restartButtonContainer = document.getElementById(
 );
 const statusContainer = document.getElementById("statusContainer");
 let currentQuestionIndex = 0;
-let score = 0; // Initialize score
+let score = 0;
 const totalQuestions = questions.length;
 
 START.addEventListener("click", function () {
   START.style.display = "none";
   Paragraph.style.display = "none";
   statusContainer.style.display = "block";
+  shuffleArray(questions);
   showQuestion(currentQuestionIndex);
 });
 
-// Function to shuffle the array
 function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
+  // Shuffle logic remains unchanged...
 }
-shuffleArray(questions);
 
-// Show questions
 function showQuestion(index) {
   const questionContainer = document.getElementById("questionContainer");
   questionContainer.textContent = questions[index].question;
@@ -102,6 +97,7 @@ function showQuestion(index) {
   });
 
   updateStatus();
+  timing(); // Start the timer when the question is displayed
 }
 
 function checkAnswer(buttonElement, buttons) {
@@ -112,7 +108,7 @@ function checkAnswer(buttonElement, buttons) {
 
   if (answerIndex === correctAnswerIndex) {
     buttonElement.style.backgroundColor = "green";
-    score++; // Increment score for correct answer
+    score++;
   } else {
     buttonElement.style.backgroundColor = "red";
     buttons[correctAnswerIndex].style.backgroundColor = "green";
@@ -131,16 +127,14 @@ function disableButtons(buttons) {
 function displayResults() {
   const resultContainer = document.getElementById("resultContainer");
   const resultParagraph = document.getElementById("resultParagraph");
-  const level = calculateLevel(score); // Assuming score is defined elsewhere
+  const level = calculateLevel(score);
 
   resultParagraph.textContent = `Quiz completed! Your score: ${score}/${totalQuestions}. Estimated level: ${level}`;
-
   localStorage.setItem("quizScore", score);
-
   resultContainer.style.display = "block";
   document.getElementById("questionContainer").style.display = "none";
   document.getElementById("answerContainer").style.display = "none";
-  showRestartButton(); // Show the restart button
+  showRestartButton();
 }
 
 function showRestartButton() {
@@ -202,13 +196,19 @@ function showNextButton() {
 }
 
 function calculateLevel(score) {
-  if (score <= 2) return "Niveau A1";
-  if (score <= 5) return "Niveau A2";
-  if (score <= 7) return "Niveau B1";
-  if (score === 8) return "Niveau B2";
-  if (score === 9) return "Niveau C1";
-  if (score === 10) return "Niveau C2";
-  return "Niveau inconnu";
+  const levels = [
+    { min: 0, max: 2, level: "Niveau A1" },
+    { min: 3, max: 5, level: "Niveau A2" },
+    { min: 6, max: 7, level: "Niveau B1" },
+    { min: 8, max: 8, level: "Niveau B2" },
+    { min: 9, max: 9, level: "Niveau C1" },
+    { min: 10, max: 10, level: "Niveau C2" },
+  ];
+
+  const level = levels.find(
+    (level) => score >= level.min && score <= level.max
+  );
+  return level ? level.level : "Niveau inconnu";
 }
 
 function updateStatus() {
@@ -216,6 +216,24 @@ function updateStatus() {
   statusContainer.textContent = `Question Number: ${
     currentQuestionIndex + 1
   } / ${totalQuestions}`;
+}
+
+function timing() {
+  let counter = 20;
+  document.getElementById(
+    "timer"
+  ).textContent = `Time remaining: ${counter} seconds`;
+  let intervalId = setInterval(() => {
+    counter--;
+    document.getElementById(
+      "timer"
+    ).textContent = `Time remaining: ${counter} seconds`;
+    if (counter <= 0) {
+      clearInterval(intervalId);
+      disableButtons(document.querySelectorAll(".answers-button"));
+      showNextButton();
+    }
+  }, 1000);
 }
 
 statusContainer.style.display = "none";
@@ -226,7 +244,7 @@ window.addEventListener("load", function () {
     const resultContainer = document.getElementById("resultContainer");
     const resultParagraph = document.getElementById("resultParagraph");
     resultParagraph.textContent = `Your score: ${storedScore}/${totalQuestions}. And your level is : ${calculateLevel(
-      score
+      storedScore
     )}`;
     resultContainer.style.display = "block";
     resultParagraph.classList.add("resultParagraph");

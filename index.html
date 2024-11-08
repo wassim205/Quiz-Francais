@@ -6,38 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCF Quiz</title>
     <script src="tailwind.js" defer></script>
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
-</head>
-
-<body>
-    <header class="w-screen h-80 flex flex-col justify-center items-center mt-10">
-        <h1 class="text-9xl font-serif">FRENCH QUIZ</h1>
-        <h2 class="text-8xl mt-8 font-serif">TCF</h2>
-    </header>
-    <div id="resultContainer" style="display: none;">
-        <p id="resultParagraph"></p>
-    </div>
-    <main class="w-screen h-52 flex justify-center items-center flex-col mt-16">
-        <p id="paragraphIntro" class="text-xl font-bold duration-500">Welcome to our TCF testing site! Test your French
-            level and instantly discover if you're A1, A2, or higher.</p>
-        <button id="startQuiz"
-            class="mt-10 inline-flex items-center justify-center p-1 mb-2 me-2 text-sm font-medium text-gray-900 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 hover:text-purple-950 focus:ring-4 focus:outline-none focus:ring-blue-300 transition duration-300 ease-in-out"
-            aria-label="Start the quiz">
-            <span class="px-5 py-2 bg-white rounded-md group-hover:bg-opacity-0">
-                <i class="fa-solid fa-play"></i> Start the Quiz
-            </span>
-        </button>
-
-        <div id="questionContainer" class="font-serif font-bold text-xl"></div>
-        <div id="answerContainer" class="font-serif font-bold text-lg flex mt-20 space-x-32"></div>
-        <div id="next-buttonContainer"></div>
-        <div id="statusContainer" class="font-bold text-lg mt-3"></div>
-
-        <!-- Restart Button Container -->
-        <div id="restart-buttonContainer" class="mt-5"></div>
-    </main>
-
     <style>
         .answers-button {
             background-color: #909090;
@@ -67,16 +36,49 @@
         .restart-button {
             color: black;
             font-size: 20px;
+            font-weight: bold;
         }
 
         .resultParagraph {
             font-weight: bold;
-            margin-left: 5px;
+            margin-right: 25px;
             display: flex;
-            justify-content: center;
-
+            justify-content: end;
+            color: rgb(24, 59, 68);
         }
     </style>
+</head>
+
+<body class="bg-orange-200">
+    <header class="w-screen h-80 flex flex-col justify-center items-center mt-10 text-purple-900">
+        <h1 class="text-9xl font-serif">FRENCH QUIZ</h1>
+        <h2 class="text-8xl mt-8 font-serif">TCF</h2>
+    </header>
+    <div id="resultContainer" style="display: none;">
+        <p id="resultParagraph"></p>
+        <p id="timer" class=" text-red-800 font-bold flex justify-end mr-10"></p>
+    </div>
+
+    <main class="w-screen h-52 flex justify-center items-center flex-col mt-16">
+        <p id="paragraphIntro" class="text-xl font-bold duration-500 text-black">Welcome to our TCF testing site! Test
+            your French
+            level and instantly discover if you're A1, A2, or higher.</p>
+        <button id="startQuiz"
+            class="mt-10 inline-flex items-center justify-center p-1 mb-2 me-2 text-sm font-medium text-gray-900 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 hover:text-purple-950 focus:ring-4 focus:outline-none focus:ring-blue-300 transition duration-300 ease-in-out"
+            aria-label="Start the quiz">
+            <span class="px-5 py-2 bg-white rounded-md group-hover:bg-opacity-0">
+                <i class="fa-solid fa-play"></i> Start the Quiz
+            </span>
+        </button>
+
+        <div id="questionContainer" class="font-serif font-bold text-xl"></div>
+        <div id="answerContainer" class="font-serif font-bold text-lg flex mt-20 space-x-32"></div>
+        <div id="next-buttonContainer"></div>
+        <div id="statusContainer" class="font-bold text-lg mt-3"></div>
+
+        <!-- Restart Button Container -->
+        <div id="restart-buttonContainer" class="mt-5"></div>
+    </main>
 
     <script src="script.js" defer></script>
 </body>
