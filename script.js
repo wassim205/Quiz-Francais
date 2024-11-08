@@ -54,12 +54,21 @@ const questions = [
   },
 ];
 
-//start quiz
+// Start quiz
 const START = document.getElementById("startQuiz");
 const Paragraph = document.getElementById("paragraphIntro");
+const restartButtonContainer = document.getElementById(
+  "restart-buttonContainer"
+);
+const statusContainer = document.getElementById("statusContainer");
+let currentQuestionIndex = 0;
+let score = 0; // Initialize score
+const totalQuestions = questions.length;
+
 START.addEventListener("click", function () {
-  START.remove();
-  Paragraph.remove();
+  START.style.display = "none";
+  Paragraph.style.display = "none";
+  statusContainer.style.display = "block";
   showQuestion(currentQuestionIndex);
 });
 
@@ -72,10 +81,7 @@ function shuffleArray(array) {
 }
 shuffleArray(questions);
 
-let currentQuestionIndex = 0;
-let score = 0; // Initialize score
-const totalQuestions = questions.length; // Total number of questions
-// show questions
+// Show questions
 function showQuestion(index) {
   const questionContainer = document.getElementById("questionContainer");
   questionContainer.textContent = questions[index].question;
@@ -95,12 +101,7 @@ function showQuestion(index) {
     answerContainer.appendChild(button);
   });
 
-  const nextButton = document.getElementById("next-button");
-  if (nextButton) {
-    nextButton.style.display = "block";
-  }
-
-  updateStatus(); // Update status display when showing a question
+  updateStatus();
 }
 
 function checkAnswer(buttonElement, buttons) {
@@ -118,13 +119,56 @@ function checkAnswer(buttonElement, buttons) {
   }
   disableButtons(buttons);
   showNextButton();
-  updateStatus(); // Update status display after answering
+  updateStatus();
 }
 
 function disableButtons(buttons) {
   buttons.forEach((button) => {
     button.disabled = true;
   });
+}
+
+function displayResults() {
+  const resultContainer = document.getElementById("resultContainer");
+  const resultParagraph = document.getElementById("resultParagraph");
+  const level = calculateLevel(score); // Assuming score is defined elsewhere
+
+  resultParagraph.textContent = `Quiz completed! Your score: ${score}/${totalQuestions}. Estimated level: ${level}`;
+
+  localStorage.setItem("quizScore", score);
+
+  resultContainer.style.display = "block";
+  document.getElementById("questionContainer").style.display = "none";
+  document.getElementById("answerContainer").style.display = "none";
+  showRestartButton(); // Show the restart button
+}
+
+function showRestartButton() {
+  const restartButton = document.createElement("button");
+  restartButton.textContent = "Restart Quiz";
+  restartButton.classList.add("restart-button");
+  restartButton.addEventListener("click", restartQuiz);
+  restartButtonContainer.appendChild(restartButton);
+}
+
+function restartQuiz() {
+  currentQuestionIndex = 0;
+  score = 0;
+  restartButtonContainer.innerHTML = "";
+  const answerContainer = document.getElementById("answerContainer");
+  const buttons = answerContainer.getElementsByTagName("button");
+  for (let button of buttons) {
+    button.style.backgroundColor = "";
+    button.disabled = false;
+  }
+
+  document.getElementById("resultContainer").style.display = "none";
+  document.getElementById("questionContainer").style.display = "block";
+  document.getElementById("answerContainer").style.display = "block";
+  statusContainer.style.display = "block";
+
+  shuffleArray(questions);
+  showQuestion(currentQuestionIndex);
 }
 
 function showNextButton() {
@@ -142,10 +186,7 @@ function showNextButton() {
       if (currentQuestionIndex < questions.length) {
         showQuestion(currentQuestionIndex);
       } else {
-        const level = calculateLevel(score);
-        alert(
-          `Quiz completed! Your score: ${score}/${totalQuestions}. Estimated level: ${level}`
-        );
+        displayResults();
       }
       nextButton.style.display = "none";
     });
@@ -156,10 +197,7 @@ function showNextButton() {
   if (currentQuestionIndex < questions.length - 1) {
     nextButton.style.display = "block";
   } else {
-    const level = calculateLevel(score);
-    alert(
-      `Quiz completed! Your score: ${score}/${totalQuestions}. Estimated level: ${level}`
-    );
+    displayResults();
   }
 }
 
@@ -179,3 +217,16 @@ function updateStatus() {
     currentQuestionIndex + 1
   } / ${totalQuestions}`;
 }
+
+statusContainer.style.display = "none";
+
+window.addEventListener("load", function () {
+  const storedScore = localStorage.getItem("quizScore");
+  if (storedScore) {
+    const resultContainer = document.getElementById("resultContainer");
+    const resultParagraph = document.getElementById("resultParagraph");
+    resultParagraph.textContent = `Your score: ${storedScore}/${totalQuestions}. And your level is : ${calculateLevel(score)}`;
+    resultContainer.style.display = "block";
+    resultParagraph.classList.add("resultParagraph");
+  }
+});
