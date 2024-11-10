@@ -54,144 +54,177 @@ const questions = [
   },
 ];
 
-// Start quiz
 const START = document.getElementById("startQuiz");
 const Paragraph = document.getElementById("paragraphIntro");
 const restartButtonContainer = document.getElementById(
   "restart-buttonContainer"
 );
 const statusContainer = document.getElementById("statusContainer");
+const resultContainer = document.getElementById("resultContainer");
+const resultParagraph = document.getElementById("resultParagraph");
+const timerDisplay = document.getElementById("timer");
+const questionContainer = document.getElementById("questionContainer");
+const answerContainer = document.getElementById("answerContainer");
+const nextButtonContainer = document.getElementById("next-buttonContainer");
+
 let currentQuestionIndex = 0;
 let score = 0;
 const totalQuestions = questions.length;
+let timerIntervalId = null;
 
-START.addEventListener("click", function () {
+START.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  // Reset all states
+  currentQuestionIndex = 0;
+  score = 0;
+  clearUI();
+
+  console.log("Quiz started"); // Debugging line
+
+  // Hide start elements and show quiz elements
   START.style.display = "none";
   Paragraph.style.display = "none";
   statusContainer.style.display = "block";
+  questionContainer.style.display = "block";
+  answerContainer.style.display = "block";
+
+  // Start the quiz
   shuffleArray(questions);
   showQuestion(currentQuestionIndex);
-});
+}
 
-function shuffleArray(array) {
-  // Shuffle logic remains unchanged...
+function clearUI() {
+  // Clear all containers
+  resultContainer.style.display = "none";
+  nextButtonContainer.innerHTML = "";
+  answerContainer.innerHTML = "";
+  clearTimer();
+}
+
+function clearTimer() {
+  if (timerIntervalId) {
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;
+  }
+  if (timerDisplay) { // Ensure timerDisplay is defined
+    timerDisplay.textContent = ""; // Clear the timer display
+  }
 }
 
 function showQuestion(index) {
-  const questionContainer = document.getElementById("questionContainer");
+  clearUI();
+
+  console.log(`Showing question ${index}`); // Debugging line
+  console.log(questions[index]); // Debugging line
+
+  // Display question
   questionContainer.textContent = questions[index].question;
 
-  const answerContainer = document.getElementById("answerContainer");
-  answerContainer.innerHTML = "";
+  // Create answer buttons
   const answerButtons = questions[index].answers.map((answer, answerIndex) => {
-    const answerElement = document.createElement("button");
-    answerElement.textContent = `${answerIndex + 1}. ${answer}`;
-    answerElement.classList.add("answers-button");
-    answerElement.dataset.answerIndex = answerIndex;
-    return answerElement;
+    const button = document.createElement("button");
+    button.textContent = `${answerIndex + 1}. ${answer}`;
+    button.classList.add("answers-button");
+    button.dataset.answerIndex = answerIndex;
+    return button;
   });
 
+  // Add event listeners and append buttons
   answerButtons.forEach((button) => {
     button.addEventListener("click", () => checkAnswer(button, answerButtons));
     answerContainer.appendChild(button);
   });
 
   updateStatus();
-  timing(); // Start the timer when the question is displayed
+  startTimer();
 }
 
-function checkAnswer(buttonElement, buttons) {
-  const answerIndex = parseInt(buttonElement.dataset.answerIndex);
+function startTimer() {
+  let counter = 20;
+  timerDisplay.textContent = `Time remaining: ${counter} seconds`;
+
+  timerIntervalId = setInterval(() => {
+    counter--;
+
+    if (counter <= 0) {
+      clearTimer();
+      const buttons = document.querySelectorAll(".answers-button");
+      disableButtons(buttons);
+      showNextButton();
+    }
+  }, 1000);
+}
+
+function checkAnswer(selectedButton, allButtons) {
+  clearTimer();
+
+  const selectedIndex = parseInt(selectedButton.dataset.answerIndex);
   const correctAnswerIndex = questions[currentQuestionIndex].answers.indexOf(
     questions[currentQuestionIndex].correct
   );
 
-  if (answerIndex === correctAnswerIndex) {
-    buttonElement.style.backgroundColor = "green";
+  if (selectedIndex === correctAnswerIndex) {
+    selectedButton.style.backgroundColor = "green";
     score++;
   } else {
-    buttonElement.style.backgroundColor = "red";
-    buttons[correctAnswerIndex].style.backgroundColor = "green";
+    selectedButton.style.backgroundColor = "red";
+    allButtons[correctAnswerIndex].style.backgroundColor = "green";
   }
-  disableButtons(buttons);
+
+  disableButtons(allButtons);
   showNextButton();
   updateStatus();
 }
 
-function disableButtons(buttons) {
-  buttons.forEach((button) => {
-    button.disabled = true;
+function showNextButton() {
+  nextButtonContainer.innerHTML = ""; // Clear previous button
+
+  if (currentQuestionIndex >= questions.length - 1) {
+    displayResults();
+    return;
+  }
+
+  const nextButton = document.createElement("button");
+  nextButton.textContent = "Next";
+  nextButton.classList.add("next-button");
+  nextButton.addEventListener("click", () => {
+    currentQuestionIndex++;
+    showQuestion(currentQuestionIndex);
   });
+
+  nextButtonContainer.appendChild(nextButton);
 }
 
 function displayResults() {
-  const resultContainer = document.getElementById("resultContainer");
-  const resultParagraph = document.getElementById("resultParagraph");
-  const level = calculateLevel(score);
+  clearUI();
 
+  const level = calculateLevel(score);
   resultParagraph.textContent = `Quiz completed! Your score: ${score}/${totalQuestions}. Estimated level: ${level}`;
+  resultParagraph.classList.add("resultParagraph");
+
   localStorage.setItem("quizScore", score);
   resultContainer.style.display = "block";
-  document.getElementById("questionContainer").style.display = "none";
-  document.getElementById("answerContainer").style.display = "none";
+  questionContainer.style.display = "none";
+  answerContainer.style.display = "none";
+
   showRestartButton();
 }
 
 function showRestartButton() {
+  restartButtonContainer.innerHTML = "";
   const restartButton = document.createElement("button");
   restartButton.textContent = "Restart Quiz";
   restartButton.classList.add("restart-button");
-  restartButton.addEventListener("click", restartQuiz);
+  restartButton.addEventListener("click", startQuiz);
   restartButtonContainer.appendChild(restartButton);
 }
 
-function restartQuiz() {
-  currentQuestionIndex = 0;
-  score = 0;
-  restartButtonContainer.innerHTML = "";
-  const answerContainer = document.getElementById("answerContainer");
-  const buttons = answerContainer.getElementsByTagName("button");
-  for (let button of buttons) {
-    button.style.backgroundColor = "";
-    button.disabled = false;
-  }
-
-  document.getElementById("resultContainer").style.display = "none";
-  document.getElementById("questionContainer").style.display = "block";
-  document.getElementById("answerContainer").style.display = "block";
-  statusContainer.style.display = "block";
-
-  shuffleArray(questions);
-  showQuestion(currentQuestionIndex);
-}
-
-function showNextButton() {
-  const answerContainer = document.getElementById("next-buttonContainer");
-
-  let nextButton = document.getElementById("next-button");
-  if (!nextButton) {
-    nextButton = document.createElement("button");
-    nextButton.id = "next-button";
-    nextButton.textContent = "Next";
-    nextButton.classList.add("next-button");
-
-    nextButton.addEventListener("click", () => {
-      currentQuestionIndex++;
-      if (currentQuestionIndex < questions.length) {
-        showQuestion(currentQuestionIndex);
-      } else {
-        displayResults();
-      }
-      nextButton.style.display = "none";
-    });
-
-    answerContainer.appendChild(nextButton);
-  }
-
-  if (currentQuestionIndex < questions.length - 1) {
-    nextButton.style.display = "block";
-  } else {
-    displayResults();
+// Helper functions remain the same
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
@@ -212,41 +245,25 @@ function calculateLevel(score) {
 }
 
 function updateStatus() {
-  const statusContainer = document.getElementById("statusContainer");
   statusContainer.textContent = `Question Number: ${
     currentQuestionIndex + 1
   } / ${totalQuestions}`;
 }
 
-function timing() {
-  let counter = 20;
-  document.getElementById(
-    "timer"
-  ).textContent = `Time remaining: ${counter} seconds`;
-  let intervalId = setInterval(() => {
-    counter--;
-    document.getElementById(
-      "timer"
-    ).textContent = `Time remaining: ${counter} seconds`;
-    if (counter <= 0) {
-      clearInterval(intervalId);
-      disableButtons(document.querySelectorAll(".answers-button"));
-      showNextButton();
-    }
-  }, 1000);
+function disableButtons(buttons) {
+  buttons.forEach((button) => {
+    button.disabled = true;
+  });
 }
 
-statusContainer.style.display = "none";
-
+// Load previous score on page load
 window.addEventListener("load", function () {
   const storedScore = localStorage.getItem("quizScore");
   if (storedScore) {
-    const resultContainer = document.getElementById("resultContainer");
-    const resultParagraph = document.getElementById("resultParagraph");
-    resultParagraph.textContent = `Your score: ${storedScore}/${totalQuestions}. And your level is : ${calculateLevel(
-      storedScore
+    resultParagraph.textContent = `Your previous score: ${storedScore}/${totalQuestions}. Estimated level: ${calculateLevel(
+      parseInt(storedScore)
     )}`;
-    resultContainer.style.display = "block";
     resultParagraph.classList.add("resultParagraph");
+    resultContainer.style.display = "block";
   }
 });

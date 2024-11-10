@@ -8,24 +8,31 @@
     <script src="tailwind.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
     <style>
+        :root {
+            --primary-color: #909090;
+            --secondary-color: #111827;
+            --background-color: #FFC107;
+            --text-color: #000000;
+            --hover-color: #000000;
+            --hover-text-color: #909090;
+        }
+
         .answers-button {
-            background-color: #909090;
-            color: black;
+            background-color: var(--primary-color);
+            color: var(--text-color);
             border-radius: 5px;
-            padding-top: 1em;
-            padding-bottom: 1em;
-            padding-right: 2em;
-            padding-left: 2em;
+            padding: 1em 2em;
             margin-bottom: 2.5em;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .answers-button:hover {
-            background-color: #000000;
-            color: #909090
+            background-color: var(--hover-color);
+            color: var(--hover-text-color);
         }
 
         .next-button {
-            background-color: #111827;
+            background-color: var(--secondary-color);
             font-size: 1.125rem;
             font-weight: bold;
             color: white;
@@ -34,7 +41,7 @@
         }
 
         .restart-button {
-            color: black;
+            color: var(--text-color);
             font-size: 20px;
             font-weight: bold;
         }
@@ -56,13 +63,14 @@
     </header>
     <div id="resultContainer" style="display: none;">
         <p id="resultParagraph"></p>
-        <p id="timer" class=" text-red-800 font-bold flex justify-end mr-10"></p>
+        <p id="timer"></p>
     </div>
 
     <main class="w-screen h-52 flex justify-center items-center flex-col mt-16">
-        <p id="paragraphIntro" class="text-xl font-bold duration-500 text-black">Welcome to our TCF testing site! Test
-            your French
-            level and instantly discover if you're A1, A2, or higher.</p>
+        <p id="paragraphIntro" class="text-xl font-bold duration-500 text-black flex flex-col">Welcome to our TCF testing site! Test
+            your French level and instantly discover if you're A1, A2, or higher.
+            <span class="font-semibold mt-3 text-center">You have 20 seconds for each question.</span>
+        </p>
         <button id="startQuiz"
             class="mt-10 inline-flex items-center justify-center p-1 mb-2 me-2 text-sm font-medium text-gray-900 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 hover:text-purple-950 focus:ring-4 focus:outline-none focus:ring-blue-300 transition duration-300 ease-in-out"
             aria-label="Start the quiz">
